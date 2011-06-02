@@ -7,13 +7,14 @@ dep 'percona-server.managed'
 dep 'nginx.managed'
 dep 'syslog-ng.managed'
 dep 'imagemagick.managed'
-# dep 'python-setuptools' ? pip?
+dep 'python-pip.managed'
+  provides 'pip'
+end
 dep 'collected-core.managed'
 dep 'curl.managed'
 dep 'zlib1g-dev.managed'
 dep 'libssl-dev.managed'
 dep 'libreadline5-dev.managed'
-#dep 'xtrabackup.managed'
 dep 'tmux.managed'
 dep 'htop.managed'
 dep 'monit.managed'
@@ -26,12 +27,19 @@ dep 'libwww-perl.managed'
 dep 'mc.managed'
 dep 'vim.managed'
 
-dep 'percona-server.managed' do
-  requires 'percona key added to apt', 'percona apt repository', 'percona-server-server-5.5.managed'
-  provides 'mysql'
+dep 'xtrabackup' do
+  requires 'percona key added to apt', 'percona apt repository', 'xtrabackup.managed'
 end
 
-dep 'percona-server-server-5.5.managed'
+dep 'xtrabackup.managed'
+
+dep 'percona-server' do
+  requires 'percona key added to apt', 'percona apt repository', 'percona-server-server-5.5.managed'
+end
+
+dep 'percona-server-server-5.5.managed' do
+  provides 'mysqld'
+end
 
 dep 'percona key added to apt' do
   met? { !sudo('apt-key list | grep Percona').blank? }
@@ -44,13 +52,15 @@ dep 'percona apt repository' do
   }
 
   met? { grep /repo\.percona\.com/, '/etc/apt/sources.list' }
-  meet { append_to_file "deb http://repo.percona.com/apt #{var(:codename)}", Fancypath.new("/etc/apt/sources.list"), :sudo => true }
+  meet { append_to_file "deb http://repo.percona.com/apt #{var(:codename)} main", Fancypath.new("/etc/apt/sources.list"), :sudo => true }
   after { Babushka::Base.host.pkg_helper.update_pkg_lists }
 end
 
-# install pip
-# install pygments
-#
+dep 'pygments' do
+  met? { which('pygmentize')  }
+  meet { sudo('pip install pygments') }
+end
+
 # adduser ikelk
 #
 # add rvm for ikelk
