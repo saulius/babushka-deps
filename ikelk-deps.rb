@@ -7,7 +7,7 @@ dep 'percona-server.managed'
 dep 'nginx.managed'
 dep 'syslog-ng.managed'
 dep 'imagemagick.managed'
-dep 'python-pip.managed'
+dep 'python-pip.managed' do
   provides 'pip'
 end
 dep 'collected-core.managed'

@@ -86,3 +86,17 @@ end
 dep 'VLC.app' do
   source 'http://heanet.dl.sourceforge.net/project/vlc/1.1.9/macosx/vlc-1.1.9.dmg'
 end
+
+dep 'kindleGen' do
+  define_var :install_path, :default => '~/bin', :type => :path
+
+  met? { which 'kindleGen' }
+  meet {
+    uri = 'http://s3.amazonaws.com/kindlegen/KindleGen_Mac_i386_v1.2.zip'
+    handle_source uri do
+      raw_shell("mkdir #{var(:install_path)}").stdout =~ /\S+||Exists/
+      log_shell "Installing kindleGen to #{var(:install_path)}", "cp kindleGen #{var(:install_path)}"
+      log_shell "Making kindleGen executable", "chmod +x #{var(:install_path)}/kindleGen"
+    end
+  }
+end

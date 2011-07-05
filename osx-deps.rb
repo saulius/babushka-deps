@@ -27,6 +27,7 @@ dep 'ember' do
            'npm.managed'
 
   requires 'rvm'
+  requires 'kindleGen'
 end
 
 dep 'ember osx apps installed' do
